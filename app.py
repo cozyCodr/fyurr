@@ -335,8 +335,20 @@ def show_artist(artist_id):
     down_show = []
     up_show = []
     for entry in artist:
-        upcoming_shows = entry.shows.filter(Show.start_time > current_time).all()
-        past_shows = entry.shows.filter(Show.start_time < current_time).all()
+        upcoming_shows = (
+            db.session.query(Show)
+            .join(Venue)
+            .filter(Show.artist_id == artist_id)
+            .filter(Show.start_time > datetime.now())
+            .all()
+        )
+        past_shows = (
+            db.session.query(Show)
+            .join(Venue)
+            .filter(Show.artist_id == artist_id)
+            .filter(Show.start_time > datetime.now())
+            .all()
+        )
         data.update(
             {
                 "id": entry.id,
@@ -424,7 +436,6 @@ def edit_artist(artist_id):
         "seeking_description": data.seeking_description,
         "image_link": data.image_link,
     }
-    # TODO: populate form with fields from artist with ID <artist_id>
     return render_template("forms/edit_artist.html", form=form, artist=edit_artist_data)
 
 
